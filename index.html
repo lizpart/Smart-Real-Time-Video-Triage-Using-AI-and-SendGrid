@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Monitor - Multi-Agent System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .pulse-ring {
+            animation: pulse-ring 2s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(0.8); opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .risk-critical { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+        .risk-high { background: linear-gradient(135deg, #ea580c, #dc2626); }
+        .risk-moderate { background: linear-gradient(135deg, #f59e0b, #ea580c); }
+        .risk-low { background: linear-gradient(135deg, #10b981, #059669); }
+        .priority-badge {
+            animation: priorityPulse 2s infinite;
+        }
+        @keyframes priorityPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .audio-wave {
+            animation: audioWave 1.5s ease-in-out infinite;
+        }
+        .audio-wave:nth-child(2) { animation-delay: 0.1s; }
+        .audio-wave:nth-child(3) { animation-delay: 0.2s; }
+        .audio-wave:nth-child(4) { animation-delay: 0.3s; }
+        .audio-wave:nth-child(5) { animation-delay: 0.4s; }
+        @keyframes audioWave {
+            0%, 100% { height: 8px; opacity: 0.3; }
+            50% { height: 24px; opacity: 1; }
+        }
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .agent-indicator {
+            transition: all 0.3s ease;
+        }
+        .agent-active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            transform: scale(1.05);
+        }
+        .workflow-step {
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        .workflow-step.active {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-white mb-3 fade-in">🏥 AI Health Monitor</h1>
+            <p class="text-blue-100 text-xl fade-in">Multi-Agent AI System for Real-time Health Assessment</p>
+            <div class="mt-4 flex justify-center space-x-6 text-sm text-blue-200 fade-in">
+                <span>✨ OpenAI GPT-4 Vision</span>
+                <span>🎤 AssemblyAI Transcription</span>
+                <span>🤖 LangGraph Multi-Agent</span>
+            </div>
+        </div>
+
+        <!-- Agent Status Bar -->
+        <div class="glass-effect rounded-3xl p-4 mb-8 fade-in">
+            <div class="flex justify-between items-center">
+                <h3 class="text-white font-semibold">Multi-Agent Workflow Status</h3>
+                <div class="flex space-x-4">
+                    <div id="captureAgent" class="agent-indicator px-3 py-2 rounded-full text-white text-sm">
+                        <i data-lucide="camera" class="w-4 h-4 inline mr-1"></i>
+                        Capture Agent
+                    </div>
+                    <div id="analysisAgent" class="agent-indicator px-3 py-2 rounded-full text-white text-sm">
+                        <i data-lucide="brain" class="w-4 h-4 inline mr-1"></i>
+                        Analysis Agent
+                    </div>
+                    <div id="reportAgent" class="agent-indicator px-3 py-2 rounded-full text-white text-sm">
+                        <i data-lucide="file-text" class="w-4 h-4 inline mr-1"></i>
+                        Report Agent
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Video Feed Section -->
+            <div class="glass-effect rounded-3xl p-6 fade-in">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-white flex items-center">
+                        <i data-lucide="video" class="w-6 h-6 mr-2"></i>
+                        Video Feed & Audio Capture
+                    </h2>
+                    <div id="cameraStatus" class="flex items-center text-green-300">
+                        <div class="w-3 h-3 bg-green-400 rounded-full mr-2 pulse-ring"></div>
+                        <span class="text-sm">Camera Ready</span>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <video id="videoFeed" autoplay playsinline muted class="w-full h-72 bg-gray-900 rounded-2xl object-cover shadow-lg"></video>
+                    <canvas id="canvas" class="hidden"></canvas>
+                    
+                    <!-- Recording Indicator -->
+                    <div id="recordingIndicator" class="absolute top-4 right-4 hidden">
+                        <div class="flex items-center bg-red-500 text-white px-4 py-2 rounded-full text-sm shadow-lg">
+                            <div class="w-2 h-2 bg-white rounded-full mr-2 pulse-ring"></div>
+                            <span class="font-medium">Recording</span>
+                        </div>
+                    </div>
+
+                    <!-- AI Analysis Overlay -->
+                    <div id="analysisOverlay" class="absolute inset-0 bg-blue-600 bg-opacity-20 rounded-2xl hidden flex items-center justify-center">
+                        <div class="text-white text-center">
+                            <div class="loading-spinner w-8 h-8 border-4 border-white border-t-transparent rounded-full mx-auto mb-2"></div>
+                            <p class="font-medium">AI Analysis in Progress...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Audio Controls -->
+                <div class="mt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center text-white">
+                            <i data-lucide="mic" class="w-5 h-5 mr-2"></i>
+                            <span class="font-medium">Audio Recording</span>
+                        </div>
+                        <div id="audioLevel" class="flex space-x-1">
+                            <div class="audio-wave w-1 h-2 bg-blue-400 rounded-full"></div>
+                            <div class="audio-wave w-1 h-2 bg-blue-400 rounded-full"></div>
+                            <div class="audio-wave w-1 h-2 bg-blue-400 rounded-full"></div>
+                            <div class="audio-wave w-1 h-2 bg-blue-400 rounded-full"></div>
+                            <div class="audio-wave w-1 h-2 bg-blue-400 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Audio Quality Indicator -->
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-blue-200">Audio Quality:</span>
+                        <div id="audioQuality" class="flex items-center">
+                            <div class="w-2 h-2 bg-green-400 rounded-full mr-1"></div>
+                            <span class="text-green-300">High</span>
+                        </div>
+                    </div>
+
+                    <!-- Recording Duration -->
+                    <div id="recordingDuration" class="text-center text-blue-200 hidden">
+                        <span class="text-lg font-mono">00:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Results Section -->
+            <div class="glass-effect rounded-3xl p-6 fade-in">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i data-lucide="activity" class="w-6 h-6 mr-2"></i>
+                    AI Health Analysis Results
+                </h2>
+                
+                <div id="analysisResults" class="space-y-4">
+                    <div class="text-center text-blue-100 py-12">
+                        <i data-lucide="stethoscope" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
+                        <p class="text-lg">Start monitoring to see AI health analysis</p>
+                        <p class="text-sm opacity-75 mt-2">Multi-agent system will process video and audio data</p>
+                    </div>
+                </div>
+
+                <!-- Priority Assessment Display -->
+                <div id="priorityAssessment" class="hidden mt-6 p-4 rounded-2xl text-white text-center priority-badge">
+                    <h3 class="font-semibold mb-2">Priority Assessment</h3>
+                    <div id="priorityLevel" class="text-3xl font-bold mb-1"></div>
+                    <div id="urgencyScore" class="text-sm opacity-90"></div>
+                </div>
+
+                <!-- Confidence Score -->
+                <div id="confidenceScore" class="hidden mt-4 text-center">
+                    <div class="text-blue-200 text-sm mb-1">AI Confidence Level</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div id="confidenceBar" class="bg-green-400 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                    <div id="confidenceText" class="text-white text-sm mt-1">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflow Progress Section -->
+        <div class="mt-8 glass-effect rounded-3xl p-6 fade-in">
+            <h3 class="text-white font-semibold mb-4 flex items-center">
+                <i data-lucide="workflow" class="w-5 h-5 mr-2"></i>
+                Workflow Progress
+            </h3>
+            <div class="flex justify-between items-center">
+                <div id="step1" class="workflow-step flex items-center space-x-2 text-white">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">1</div>
+                    <span>Data Capture</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-white opacity-30 mx-4"></div>
+                <div id="step2" class="workflow-step flex items-center space-x-2 text-white">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">2</div>
+                    <span>AI Analysis</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-white opacity-30 mx-4"></div>
+                <div id="step3" class="workflow-step flex items-center space-x-2 text-white">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">3</div>
+                    <span>Report Generation</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Controls Section -->
+        <div class="mt-8 glass-effect rounded-3xl p-6 fade-in">
+            <div class="grid md:grid-cols-3 gap-6 items-center">
+                <div class="space-y-4">
+                    <label class="text-white font-medium block">Monitoring Settings</label>
+                    <select id="intervalSelect" class="w-full bg-white/20 text-white rounded-lg px-4 py-3 border border-white/30 backdrop-blur-sm">
+                        <option value="2000">Every 2 seconds</option>
+                        <option value="5000" selected>Every 5 seconds</option>
+                        <option value="10000">Every 10 seconds</option>
+                        <option value="30000">Every 30 seconds</option>
+                    </select>
+                    <div class="text-blue-200 text-sm">Audio recording duration: 3 seconds</div>
+                </div>
+                
+                <div class="text-center">
+                    <button id="startButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-xl">
+                        <span class="flex items-center justify-center">
+                            <i data-lucide="play" class="w-6 h-6 mr-2"></i>
+                            Start AI Monitoring
+                        </span>
+                    </button>
+                </div>
+
+                <div class="space-y-2 text-right">
+                    <div id="emailStatus" class="text-blue-200 text-sm">
+                        📧 Auto-email: High priority alerts
+                    </div>
+                    <div id="analysisCount" class="text-blue-200 text-sm">
+                        📊 Analyses completed: 0
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Status Bar -->
+        <div class="mt-6 glass-effect rounded-2xl p-4 fade-in">
+            <div class="grid md:grid-cols-4 gap-4 text-white text-sm">
+                <div id="connectionStatus" class="flex items-center">
+                    <div class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-ring"></div>
+                    <span>System Connected</span>
+                </div>
+                <div id="transcriptionStatus" class="flex items-center">
+                    <i data-lucide="headphones" class="w-4 h-4 mr-2"></i>
+                    <span>AssemblyAI Ready</span>
+                </div>
+                <div id="aiStatus" class="flex items-center">
+                    <i data-lucide="brain" class="w-4 h-4 mr-2"></i>
+                    <span>OpenAI GPT-4 Ready</span>
+                </div>
+                <div id="lastUpdate" class="text-right opacity-75">
+                    Last analysis: Never
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class EnhancedHealthMonitor {
+            constructor() {
+                this.video = document.getElementById('videoFeed');
+                this.canvas = document.getElementById('canvas');
+                this.startButton = document.getElementById('startButton');
+                this.intervalSelect = document.getElementById('intervalSelect');
+                this.analysisResults = document.getElementById('analysisResults');
+                this.priorityAssessment = document.getElementById('priorityAssessment');
+                this.recordingIndicator = document.getElementById('recordingIndicator');
+                this.analysisOverlay = document.getElementById('analysisOverlay');
+                this.recordingDuration = document.getElementById('recordingDuration');
+                
+                this.isMonitoring = false;
+                this.mediaRecorder = null;
+                this.stream = null;
+                this.monitoringInterval = null;
+                this.analysisCount = 0;
+                this.recordingStartTime = null;
+                this.durationInterval = null;
+                
+                this.initializeEventListeners();
+                this.initializeCamera();
+                this.initializeLucideIcons();
+                this.updateAgentStatus('idle');
+            }
+
+            initializeLucideIcons() {
+                lucide.createIcons();
+            }
+
+            initializeEventListeners() {
+                this.startButton.addEventListener('click', () => this.toggleMonitoring());
+            }
+
+            async initializeCamera() {
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 },
+                            facingMode: 'user'
+                        }, 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
+                        }
+                    });
+                    this.video.srcObject = this.stream;
+                    
+                    document.getElementById('cameraStatus').innerHTML = `
+                        <div class="w-3 h-3 bg-green-400 rounded-full mr-2 pulse-ring"></div>
+                        <span class="text-sm">Camera Ready</span>
+                    `;
+
+                    // Initialize audio level monitoring
+                    this.initializeAudioMonitoring();
+                    
+                } catch (error) {
+                    console.error('Camera access error:', error);
+                    document.getElementById('cameraStatus').innerHTML = `
+                        <div class="w-3 h-3 bg-red-400 rounded-full mr-2"></div>
+                        <span class="text-sm">Camera Error</span>
+                    `;
+                }
+            }
+
+            initializeAudioMonitoring() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const analyser = audioContext.createAnalyser();
+                    const microphone = audioContext.createMediaStreamSource(this.stream);
+                    
+                    analyser.fftSize = 256;
+                    microphone.connect(analyser);
+                    
+                    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    
+                    const updateAudioLevel = () => {
+                        analyser.getByteFrequencyData(dataArray);
+                        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                        
+                        // Update audio quality indicator
+                        const quality = average > 50 ? 'High' : average > 20 ? 'Medium' : 'Low';
+                        const color = average > 50 ? 'green' : average > 20 ? 'yellow' : 'red';
+                        
+                        document.getElementById('audioQuality').innerHTML = `
+                            <div class="w-2 h-2 bg-${color}-400 rounded-full mr-1"></div>
+                            <span class="text-${color}-300">${quality}</span>
+                        `;
+                        
+                        requestAnimationFrame(updateAudioLevel);
+                    };
+                    
+                    updateAudioLevel();
+                } catch (error) {
+                    console.warn('Audio monitoring setup failed:', error);
+                }
+            }
+
+            captureFrame() {
+                this.canvas.width = this.video.videoWidth;
+                this.canvas.height = this.video.videoHeight;
+                const context = this.canvas.getContext('2d');
+                context.drawImage(this.video, 0, 0);
+                return this.canvas.toDataURL('image/jpeg', 0.9);
+            }
+
+            async recordAudio() {
+                return new Promise(async (resolve) => {
+                    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const chunks = [];
+                    const mediaRecorder = new MediaRecorder(audioStream, {
+                        mimeType: 'audio/webm;codecs=opus'
+                    });
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            chunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    };
+
+                    mediaRecorder.start();
+
+                    setTimeout(() => {
+                        if (mediaRecorder.state === 'recording') {
+                            mediaRecorder.stop();
+                        }
+                        // Stop all tracks to release the mic
+                        audioStream.getTracks().forEach(track => track.stop());
+                    }, 3000);
+                });
+            }
+
+            startRecordingTimer() {
+                this.recordingDuration.classList.remove('hidden');
+                this.durationInterval = setInterval(() => {
+                    if (this.recordingStartTime) {
+                        const elapsed = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+                        const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                        const seconds = (elapsed % 60).toString().padStart(2, '0');
+                        this.recordingDuration.querySelector('span').textContent = `${minutes}:${seconds}`;
+                    }
+                }, 100);
+            }
+
+            stopRecordingTimer() {
+                if (this.durationInterval) {
+                    clearInterval(this.durationInterval);
+                    this.durationInterval = null;
+                }
+                this.recordingDuration.classList.add('hidden');
+                this.recordingStartTime = null;
+            }
+
+            updateAgentStatus(step) {
+                const agents = ['captureAgent', 'analysisAgent', 'reportAgent'];
+                
+                // Reset all agents
+                agents.forEach(agentId => {
+                    const agent = document.getElementById(agentId);
+                    agent.classList.remove('agent-active');
+                    agent.style.background = 'rgba(255, 255, 255, 0.1)';
+                });
+
+                // Activate current agent
+                if (step === 'capture') {
+                    document.getElementById('captureAgent').classList.add('agent-active');
+                    this.updateWorkflowStep(1);
+                } else if (step === 'analyze') {
+                    document.getElementById('analysisAgent').classList.add('agent-active');
+                    this.updateWorkflowStep(2);
+                } else if (step === 'report') {
+                    document.getElementById('reportAgent').classList.add('agent-active');
+                    this.updateWorkflowStep(3);
+                }
+            }
+
+            updateWorkflowStep(activeStep) {
+                for (let i = 1; i <= 3; i++) {
+                    const step = document.getElementById(`step${i}`);
+                    if (i <= activeStep) {
+                        step.classList.add('active');
+                        step.querySelector('div').style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    } else {
+                        step.classList.remove('active');
+                        step.querySelector('div').style.background = 'rgba(59, 130, 246, 0.5)';
+                    }
+                }
+            }
+
+            async analyzeHealthData() {
+                try {
+                    this.analysisOverlay.classList.remove('hidden');
+                    this.updateAgentStatus('capture');
+                    
+                    const imageBase64 = this.captureFrame();
+                    
+                    this.updateAgentStatus('analyze');
+                    const audioBase64 = await this.recordAudio();
+                    
+                    this.updateAgentStatus('report');
+                    
+                    const response = await fetch('/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            image_base64: imageBase64,
+                            audio_transcription: audioBase64,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Analysis failed: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    this.displayResults(result);
+                    this.updateLastUpdate();
+                    this.analysisCount++;
+                    document.getElementById('analysisCount').textContent = `📊 Analyses completed: ${this.analysisCount}`;
+                    
+                } catch (error) {
+                    console.error('Analysis error:', error);
+                    this.displayError(`Analysis failed: ${error.message}`);
+                } finally {
+                    this.analysisOverlay.classList.add('hidden');
+                    this.updateAgentStatus('idle');
+                    this.updateWorkflowStep(0);
+                }
+            }
+
+            displayResults(result) {
+                const analysis = result.analysis;
+                const transcription = result.transcription;
+                
+                // Display visual findings with enhanced styling
+                const visualHtml = Object.entries(analysis.visual_findings || {})
+                    .map(([key, value]) => `
+                        <div class="bg-white/10 rounded-xl p-4 mb-3 slide-in border-l-4 border-blue-400">
+                            <div class="font-semibold text-blue-200 capitalize mb-1">${key.replace('_', ' ')}</div>
+                            <div class="text-white text-sm leading-relaxed">${value}</div>
+                        </div>
+                    `).join('');
+
+                // Display verbal symptoms
+                const verbalHtml = `
+                    <div class="bg-white/10 rounded-xl p-4 mb-3 slide-in border-l-4 border-green-400">
+                        <div class="font-semibold text-green-200 mb-2">🎤 Audio Transcription</div>
+                        <div class="text-white text-sm leading-relaxed italic">"${transcription}"</div>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 mb-3 slide-in border-l-4 border-purple-400">
+                        <div class="font-semibold text-purple-200 mb-2">🗣️ Verbal Symptoms</div>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Primary Complaints:</strong> ${Array.isArray(analysis.verbal_symptoms?.primary_complaints) ? 
+                                analysis.verbal_symptoms.primary_complaints.join(', ') : 'None specified'}</div>
+                            <div><strong>Severity:</strong> ${analysis.verbal_symptoms?.severity_indicators || 'Not specified'}</div>
+                            <div><strong>Timeline:</strong> ${analysis.verbal_symptoms?.temporal_information || 'Not specified'}</div>
+                        </div>
+                    </div>
+                `;
+
+                // Display recommendations
+                const recommendationsHtml = `
+                    <div class="bg-white/10 rounded-xl p-4 slide-in border-l-4 border-yellow-400">
+                        <div class="font-semibold text-yellow-200 mb-2">💡 AI Recommendations</div>
+                        <ul class="text-white text-sm space-y-1">
+                            ${(analysis.recommended_actions || []).map(action => 
+                                `<li class="flex items-start"><span class="mr-2">•</span>${action}</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                `;
+
+                this.analysisResults.innerHTML = `
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-white mb-3 flex items-center">
+                            <i data-lucide="eye" class="w-5 h-5 mr-2"></i>
+                            Visual Assessment
+                        </h3>
+                        ${visualHtml}
+                        
+                        <h3 class="font-bold text-white mb-3 mt-6 flex items-center">
+                            <i data-lucide="mic" class="w-5 h-5 mr-2"></i>
+                            Audio Analysis
+                        </h3>
+                        ${verbalHtml}
+                        
+                        <h3 class="font-bold text-white mb-3 mt-6 flex items-center">
+                            <i data-lucide="clipboard-list" class="w-5 h-5 mr-2"></i>
+                            Recommendations
+                        </h3>
+                        ${recommendationsHtml}
+                        
+                        <div class="bg-white/10 rounded-xl p-4 mt-4 slide-in border-l-4 border-indigo-400">
+                            <div class="font-semibold text-indigo-200 mb-2">📋 Clinical Summary</div>
+                            <div class="text-white text-sm leading-relaxed">${analysis.summary || 'No summary available'}</div>
+                        </div>
+                    </div>
+                `;
+
+                // Update priority assessment
+                this.updatePriorityAssessment(analysis, result.email_sent);
+                
+                // Update confidence score
+                this.updateConfidenceScore(analysis.confidence_score || 0.8);
+
+                // Reinitialize icons for new content
+                this.initializeLucideIcons();
+            }
+
+            updatePriorityAssessment(analysis, email_sent) {
+                const priorityElement = document.getElementById('priorityAssessment');
+                const priorityLevelElement = document.getElementById('priorityLevel');
+                const urgencyScoreElement = document.getElementById('urgencyScore');
+                
+                priorityElement.classList.remove('hidden', 'risk-low', 'risk-moderate', 'risk-high', 'risk-critical');
+                
+                const riskClass = `risk-${analysis.risk_assessment || 'moderate'}`;
+                if (analysis.priority_level === 'critical') {
+                    priorityElement.classList.add('risk-critical');
+                } else {
+                    priorityElement.classList.add(riskClass);
+                }
+                
+                priorityLevelElement.textContent = (analysis.priority_level || 'MEDIUM').toUpperCase();
+                urgencyScoreElement.textContent = `Urgency Score: ${analysis.urgency_score || 5}/10`;
+
+                // Update email status
+                if (email_sent) {
+                    document.getElementById('emailStatus').innerHTML = '📧 Alert email sent to clinician';
+                    document.getElementById('emailStatus').classList.add('text-green-300');
+                }
+            }
+
+            updateConfidenceScore(confidence) {
+                const confidenceElement = document.getElementById('confidenceScore');
+                const confidenceBar = document.getElementById('confidenceBar');
+                const confidenceText = document.getElementById('confidenceText');
+                
+                confidenceElement.classList.remove('hidden');
+                
+                const percentage = Math.round(confidence * 100);
+                confidenceBar.style.width = `${percentage}%`;
+                confidenceText.textContent = `${percentage}%`;
+                
+                // Color coding based on confidence level
+                if (percentage >= 80) {
+                    confidenceBar.className = 'bg-green-400 h-2 rounded-full transition-all duration-1000';
+                } else if (percentage >= 60) {
+                    confidenceBar.className = 'bg-yellow-400 h-2 rounded-full transition-all duration-1000';
+                } else {
+                    confidenceBar.className = 'bg-red-400 h-2 rounded-full transition-all duration-1000';
+                }
+            }
+
+            displayError(message) {
+                this.analysisResults.innerHTML = `
+                    <div class="text-center text-red-300 py-12">
+                        <i data-lucide="alert-circle" class="w-16 h-16 mx-auto mb-4"></i>
+                        <p class="text-lg font-semibold">${message}</p>
+                        <p class="text-sm opacity-75 mt-2">Please check your connection and try again</p>
+                    </div>
+                `;
+                this.initializeLucideIcons();
+            }
+
+            updateLastUpdate() {
+                const now = new Date();
+                document.getElementById('lastUpdate').textContent = 
+                    `Last analysis: ${now.toLocaleTimeString()}`;
+            }
+
+            async toggleMonitoring() {
+                if (this.isMonitoring) {
+                    this.stopMonitoring();
+                } else {
+                    this.startMonitoring();
+                }
+            }
+
+            startMonitoring() {
+                this.isMonitoring = true;
+                this.recordingIndicator.classList.remove('hidden');
+                
+                this.startButton.innerHTML = `
+                    <span class="flex items-center justify-center">
+                        <i data-lucide="square" class="w-6 h-6 mr-2"></i>
+                        Stop AI Monitoring
+                    </span>
+                `;
+                this.startButton.classList.remove('bg-green-500', 'hover:bg-green-600');
+                this.startButton.classList.add('bg-red-500', 'hover:bg-red-600');
+                
+                const interval = parseInt(this.intervalSelect.value);
+                this.monitoringInterval = setInterval(() => {
+                    this.analyzeHealthData();
+                }, interval);
+                
+                // Initial analysis
+                this.analyzeHealthData();
+                this.initializeLucideIcons();
+
+                // Update status indicators
+                document.getElementById('connectionStatus').innerHTML = `
+                    <div class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-ring"></div>
+                    <span>Monitoring Active</span>
+                `;
+            }
+
+            stopMonitoring() {
+                this.isMonitoring = false;
+                this.recordingIndicator.classList.add('hidden');
+                
+                if (this.monitoringInterval) {
+                    clearInterval(this.monitoringInterval);
+                }
+                
+                this.startButton.innerHTML = `
+                    <span class="flex items-center justify-center">
+                        <i data-lucide="play" class="w-6 h-6 mr-2"></i>
+                        Start AI Monitoring
+                    </span>
+                `;
+                this.startButton.classList.remove('bg-red-500', 'hover:bg-red-600');
+                this.startButton.classList.add('bg-green-500', 'hover:bg-green-600');
+                
+                this.updateAgentStatus('idle');
+                this.updateWorkflowStep(0);
+                this.initializeLucideIcons();
+
+                // Update status indicators
+                document.getElementById('connectionStatus').innerHTML = `
+                    <div class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-ring"></div>
+                    <span>System Connected</span>
+                `;
+            }
+        }
+
+        // Initialize the enhanced health monitor when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new EnhancedHealthMonitor();
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space' && event.ctrlKey) {
+                event.preventDefault();
+                document.getElementById('startButton').click();
+            }
+        });
+
+        // Add visibility change handler to pause monitoring when tab is not visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && window.healthMonitor && window.healthMonitor.isMonitoring) {
+                console.log('Tab hidden - monitoring continues in background');
+            }
+        });
+
+        // Service worker registration for offline capabilities
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(console.error);
+        }
+    </script>
+</body>
+</html>
