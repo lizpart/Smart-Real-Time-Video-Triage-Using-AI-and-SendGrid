@@ -31,22 +31,23 @@ This enhanced AI Health Monitor uses a multi-agent system powered by LangGraph, 
 ### 1. Clone or Download the Code
 ```bash
 # If using git
-git clone <repository-url>
-cd ai-health-monitor
+git clone https://github.com/lizpart/Smart-Real-Time-Video-Triage-Using-AI-and-SendGrid
+cd Smart-Real-Time-Video-Triage-Using-AI-and-SendGrid
 
-# Or extract the provided files to a directory
 ```
 
 ### 2. Create Virtual Environment
 ```bash
-# Create virtual environment
-python -m venv health_monitor_env
+python -m venv .venv
 
-# Activate virtual environment
 # On Windows:
-health_monitor_env\Scripts\activate
+.venv\Scripts\activate
+
 # On macOS/Linux:
-source health_monitor_env/bin/activate
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
 ```
 
 ### 3. Install Dependencies
@@ -55,15 +56,8 @@ pip install -r requirements.txt
 ```
 
 ### 4. Set Up Environment Variables
-```bash
-# Copy the template
-cp .env.template .env
-
-# Edit .env file with your API keys
-nano .env  # or use your preferred editor
-```
-
-Fill in your API keys:
+Create a .env file in your project root with the following variables:
+Replace them with your api real values:
 ```env
 OPENAI_API_KEY=sk-your-openai-api-key-here
 ASSEMBLYAI_API_KEY=your-assemblyai-api-key-here
