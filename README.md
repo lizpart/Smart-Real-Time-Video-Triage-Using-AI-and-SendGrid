@@ -1,17 +1,17 @@
-# Smart Real-Time Video Triage
- - Multi-Agent System Setup Guide
+# AI Video Analysis App
+Multi-Agent System for Real-Time Video & Audio Analysis
 
-## 🏥 Overview
-This enhanced AI Health Monitor uses a multi-agent system powered by LangGraph, OpenAI LLM, and AssemblyAI for comprehensive real-time health assessment.
+## 🎥 Overview
+AI-powered video and audio analysis application using a multi-agent architecture with OpenAI GPT-4 Vision and Whisper for comprehensive real-time content analysis. 
 
-## 🚀 Features
-- **Multi-Agent Architecture**: Three specialized agents working in coordination
-- **OpenAI GPT-4 Vision**: Advanced visual health analysis
-- **AssemblyAI Transcription**: High-quality audio-to-text conversion
-- **Real-time Processing**: Continuous health monitoring
-- **Priority Assessment**: Intelligent urgency scoring and risk assessment
-- **Automated Alerts**: Email notifications for high-priority cases
-- **Enhanced UI**: Modern, responsive interface with real-time feedback
+## ✨ Features
+- **Multi-Agent Pipeline**: Three specialized agents working in sequence
+- **OpenAI GPT-4 Vision**: Advanced visual analysis
+- **OpenAI Whisper**: High-quality audio transcription
+- **Real-time Processing**: Continuous video and audio analysis
+- **Priority Scoring**: Intelligent assessment and scoring (1-10)
+- **Automated Reports**: Email notifications via SendGrid
+- **Modern UI**: Responsive interface with real-time feedback
 
 ## 📋 Prerequisites
 
@@ -22,18 +22,15 @@ This enhanced AI Health Monitor uses a multi-agent system powered by LangGraph, 
 - At least 4GB RAM recommended
 
 ### API Keys Required
-1. **OpenAI API Key** - For GPT-4 Vision analysis
-2. **AssemblyAI API Key** - For audio transcription
-3. **SendGrid API Key** - For email notifications
+1. **OpenAI API Key** - For GPT-4 Vision and Whisper
+2. **SendGrid API Key** - For email notifications
 
-## 🛠️ Installation Steps
+## 🛠️ Installation
 
-### 1. Clone or Download the Code
+### 1. Clone the Repository
 ```bash
-# If using git
 git clone https://github.com/lizpart/Smart-Real-Time-Video-Triage-Using-AI-and-SendGrid
 cd Smart-Real-Time-Video-Triage-Using-AI-and-SendGrid
-
 ```
 
 ### 2. Create Virtual Environment
@@ -45,9 +42,6 @@ python -m venv .venv
 
 # On macOS/Linux:
 source .venv/bin/activate
-
-pip install -r requirements.txt
-
 ```
 
 ### 3. Install Dependencies
@@ -56,35 +50,27 @@ pip install -r requirements.txt
 ```
 
 ### 4. Set Up Environment Variables
-Create a .env file in your project root with the following variables:
-Replace them with your api real values:
+Create a `.env` file in your project root:
 ```env
 OPENAI_API_KEY=sk-your-openai-api-key-here
-ASSEMBLYAI_API_KEY=your-assemblyai-api-key-here
 SENDGRID_API_KEY=SG.your-sendgrid-api-key-here
 FROM_EMAIL=noreply@yourapp.com
-CLINICIAN_EMAIL=doctor@hospital.com
+RECIPIENT_EMAIL=recipient@email.com
 ```
 
 ### 5. Verify Installation
 ```bash
-python -c "import fastapi, openai, assemblyai, langgraph; print('All dependencies installed successfully!')"
+python -c "import fastapi, openai, sendgrid; print('All dependencies installed successfully!')"
 ```
 
-## 🔑 API Key Setup Guide
+## 🔑 API Key Setup
 
 ### OpenAI API Key
 1. Visit [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Sign in or create an account
 3. Click "Create new secret key"
-4. Copy the key and add to your .env file
-5. **Important**: Ensure you have access to GPT-4 Vision model
-
-### AssemblyAI API Key
-1. Visit [AssemblyAI Dashboard](https://www.assemblyai.com/dashboard/)
-2. Sign up for an account (free tier available)
-3. Navigate to "API Keys" section
-4. Copy your API key and add to .env file
+4. Copy the key and add to your `.env` file
+5. **Important**: Ensure you have access to GPT-4 Vision and Whisper models
 
 ### SendGrid API Key
 1. Visit [SendGrid Dashboard](https://app.sendgrid.com/)
@@ -95,7 +81,7 @@ python -c "import fastapi, openai, assemblyai, langgraph; print('All dependencie
 
 ## 🚀 Running the Application
 
-### Start the Backend Server
+### Start the Server
 ```bash
 # Make sure virtual environment is activated
 python main.py
@@ -108,18 +94,17 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 1. Open your web browser
 2. Navigate to `http://localhost:8000`
 3. Allow camera and microphone access when prompted
-4. Click "Start AI Monitoring" to begin
+4. Click "Start AI Analysis" to begin
 
-## 🧪 Testing the System
+## 🧪 Testing
 
 ### Health Check
-Visit `http://localhost:8000/health` to verify all services are connected:
+Visit `http://localhost:8000/health` to verify services:
 ```json
 {
   "status": "healthy",
   "services": {
     "openai": "connected",
-    "assemblyai": "configured",
     "sendgrid": "configured",
     "agents": {
       "data_capture": "active",
@@ -133,8 +118,8 @@ Visit `http://localhost:8000/health` to verify all services are connected:
 ```
 
 ### Test Analysis
-1. Start monitoring from the web interface
-2. Speak clearly into the microphone (describe any symptoms)
+1. Start analysis from the web interface
+2. Speak clearly into the microphone
 3. Ensure good lighting for video capture
 4. Check that all three agents activate in sequence
 5. Verify results appear in the analysis panel
@@ -143,36 +128,35 @@ Visit `http://localhost:8000/health` to verify all services are connected:
 
 ### Agent 1: Data Capture Agent
 - **Responsibility**: Video frame capture and audio transcription
-- **Technology**: AssemblyAI for speech-to-text
-- **Output**: High-quality captured data with quality assessment
+- **Technology**: OpenAI Whisper for speech-to-text
+- **Output**: Captured data with quality assessment
 
-### Agent 2: Analysis Agent  
-- **Responsibility**: Health analysis and priority assessment
-- **Technology**: OpenAI GPT-4 Vision for comprehensive analysis
-- **Output**: Detailed health assessment with urgency scoring
+### Agent 2: Analysis Agent
+- **Responsibility**: Visual and audio analysis with priority assessment
+- **Technology**: OpenAI GPT-4 Vision (gpt-4o model)
+- **Output**: Detailed analysis with scoring (1-10)
 
 ### Agent 3: Report Agent
-- **Responsibility**: Report generation and communication
-- **Technology**: HTML report generation and SendGrid email delivery
-- **Output**: Formatted reports and automated clinician notifications
+- **Responsibility**: Report generation and email delivery
+- **Technology**: HTML report generation and SendGrid
+- **Output**: Formatted reports and automated email notifications
 
-## 🔧 Configuration Options
+## ⚙️ Configuration Options
 
-### Monitoring Intervals
-- 2 seconds (intensive monitoring)
-- 5 seconds (standard monitoring) - **Default**
-- 10 seconds (regular monitoring)
-- 30 seconds (periodic monitoring)
+### Analysis Intervals
+- 2 seconds (intensive)
+- 5 seconds (standard) - **Default**
+- 10 seconds (regular)
+- 30 seconds (periodic)
 
 ### Email Alerts
 Automatic emails are sent for:
-- **High Priority** cases (risk assessment: high)
-- **Critical Priority** cases 
-- **Urgency Score** ≥ 7/10
+- **High Priority** cases
+- **Critical Priority** cases
+- **Score** ≥ 7/10
 
 ### Audio Recording
 - **Duration**: 3 seconds per capture
-- **Quality**: High-fidelity with noise suppression
 - **Format**: WebM with Opus codec
 
 ## 🐛 Troubleshooting
@@ -185,13 +169,13 @@ Automatic emails are sent for:
 - Try refreshing the page
 
 #### "Audio transcription unavailable"
-- Verify AssemblyAI API key is correct
+- Verify OpenAI API key is correct
 - Check internet connection
 - Ensure microphone permissions are granted
 
 #### "Analysis error: API request failed"
 - Verify OpenAI API key and billing status
-- Check if you have access to GPT-4 Vision
+- Check if you have access to GPT-4 Vision and Whisper
 - Monitor API rate limits
 
 #### Email notifications not working
@@ -206,19 +190,13 @@ LOG_LEVEL=DEBUG
 DEBUG=True
 ```
 
-### Performance Optimization
-- Close other browser tabs to free memory
-- Ensure stable internet connection
-- Use good lighting for better video analysis
-- Speak clearly and close to microphone
-
 ## 📊 Usage Guidelines
 
 ### Best Practices
 1. **Positioning**: Sit 2-3 feet from camera with good lighting
-2. **Audio**: Speak clearly and describe symptoms in detail
+2. **Audio**: Speak clearly for accurate transcription
 3. **Environment**: Use in quiet space for better audio quality
-4. **Monitoring**: Allow multiple analysis cycles for comprehensive assessment
+4. **Analysis**: Allow multiple analysis cycles for comprehensive assessment
 
 ### Privacy and Security
 - Video and audio data is processed in real-time
@@ -242,15 +220,40 @@ tail -f health_monitor.log
 python main.py --log-level DEBUG
 ```
 
-### Contact Information
-For technical support or questions about the multi-agent health monitoring system, please refer to the documentation or create an issue in the project repository.
+---
+
+## � Dependencies
+
+Core packages (see `requirements.txt`):
+- `fastapi==0.116.1` - Web framework
+- `openai==1.97.1` - GPT-4 Vision & Whisper
+- `sendgrid==6.12.4` - Email delivery
+- `python-dotenv==1.1.1` - Environment variables
+- `uvicorn==0.35.0` - ASGI server
+- `Jinja2==3.1.6` - Template rendering
+
+## 🔒 Security & Privacy
+
+- Video and audio data is processed in real-time
+- No permanent storage of media files
+- API communications are encrypted
+- Keep API keys secure - never commit to version control
+- Use environment variables for sensitive data
+
+## 📈 Production Deployment
+
+For production use, consider:
+- Implementing rate limiting
+- Adding user authentication
+- Setting up database for analysis history
+- Using HTTPS/SSL certificates
+- Configuring proper CORS policies
+- Implementing logging and monitoring
+
+## 📄 License
+
+See LICENSE file for details.
 
 ---
 
-## 🔒 Important Notes
-
-⚠️ **Medical Disclaimer**: This system is for triaging and alerting purposes only. It should not replace professional medical diagnosis or treatment. Always consult healthcare professionals for medical decisions.
-
-🔐 **Security**: Keep your API keys secure and never commit them to version control. Use environment variables and secure key management practices.
-
-📈 **Scaling**: For production deployment, consider implementing rate limiting, user authentication, and database persistence for analysis history.
+**Note**: This is an AI analysis tool. Results should be reviewed by qualified professionals for decision-making purposes.
